@@ -149,9 +149,5 @@ int main()
 
     menuPrincipal();
 
-    printf("Hola mundo perrosssss");
-    printf("hola perras---");
-
-    
     return 0;
 }
