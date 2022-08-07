@@ -23,46 +23,17 @@ typedef struct{  // USUARIOS
     struct usuarios *ant;
 }usuarios;
 
-
-
-
-
-
-
-
-
-static void registrarVenta()
-{
-    printf("___LISTA DE PRODUCTOS___");
-    imprimir();
-    printf("\n\n");
-
-    int codigo;
-    int cantidadp;
-
-    char opcion ;
-    fflush(stdin);
-    printf("----- �DECEA COMPRAR? ('s/n') -----  \n");
-    scanf("%c",&opcion);
-
-
-    if (opcion!= 'n')datosUser();
-
-    while(opcion!= 'n')
-    {
-        printf("-->Ingrese el codigo del producto: ");
-        scanf("%i", &codigo);
-        fflush(stdin);
-        printf("-->Ingrese el cantidad del producto: ");
-        scanf("%i", &cantidadp);
-
-        fflush(stdin);
-        printf("decea adquirir otro producto? 's/n' \n");
-        scanf("%c",&opcion);
-    }
-
+void insertarusu(){
+    return;
 }
 
+void insertarpro(){
+    return;
+}
+
+void imprimir(){
+    return;
+}
 
 void datosUser()
 {
@@ -85,6 +56,38 @@ void datosUser()
     insertarusu(nombreUs, cedula);
 }
 
+static void registrarVenta()
+{
+    printf("___LISTA DE PRODUCTOS___");
+    imprimir();
+    printf("\n\n");
+
+    int codigo;
+    int cantidadp;
+
+    char opcion ;
+    fflush(stdin);
+    printf("----- �DECEA COMPRAR? ('s/n') -----  \n");
+    scanf("%c",&opcion);
+
+
+    if (opcion!= 'n')
+        datosUser();
+
+    while(opcion!= 'n')
+    {
+        printf("-->Ingrese el codigo del producto: ");
+        scanf("%i", &codigo);
+        fflush(stdin);
+        printf("-->Ingrese el cantidad del producto: ");
+        scanf("%i", &cantidadp);
+
+        fflush(stdin);
+        printf("decea adquirir otro producto? 's/n' \n");
+        scanf("%c",&opcion);
+    }
+
+}
 
 static void NuevoProducto()
 {
@@ -137,13 +140,14 @@ static void menuPrincipal()
     } while(opcion!=5);
 }
 
-
 int main()
 {
 
     insertarpro( "MANZANA", 15, 1000.0 );
     insertarpro( "PERA", 15, 1000.0 );
     insertarpro( "ZANAHORIA", 15, 1000.0 );
+
+    printf("Hola mundo perrosssss");
 
 
     menuPrincipal();
