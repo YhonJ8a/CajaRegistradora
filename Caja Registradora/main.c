@@ -147,9 +147,11 @@ int main()
     insertarpro( "PERA", 15, 1000.0 );
     insertarpro( "ZANAHORIA", 15, 1000.0 );
 
-    printf("Hola mundo perrosssss");
-
-
     menuPrincipal();
+
+    printf("Hola mundo perrosssss");
+    printf("hola perras---");
+
+    
     return 0;
 }
