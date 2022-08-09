@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1660082859 source:c:\repositorios\caja registradora\pruebamatrix\mainm.c
+	<stdio.h>
+	<conio.h>
+	<string.h>
+

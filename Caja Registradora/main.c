@@ -1,6 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/**
+ * 
+ *      LAS GLOVALES
+ * 
+ */
+
+int cantUs = -1;
+
+
 
 
 /**
@@ -19,8 +28,6 @@ typedef struct{             // PRODUCTOS
 } nodo;
 
 nodo *raiz = NULL;
-
-
 
 int existe(int x)
 {
@@ -178,7 +185,7 @@ typedef struct{             // USUARIOS
 }usuarios;
 
 usuarios *raizUsu = NULL;
-
+usuarios *nombreClienActu;
 
 int existeUsu(int x)
 {
@@ -212,7 +219,7 @@ int cantidadusu()
     return cant;
 }
 
-usuarios *insertarusu( char nombreusu[15], char cedula[15] )
+void insertarusu( char nombreusu[15], char cedula[15] )
 {
     static int codigo = 0;
     codigo++;
@@ -260,11 +267,11 @@ usuarios *insertarusu( char nombreusu[15], char cedula[15] )
                     siguiente->ant = nuevo;
                 }
             }
-            printf("");
-        return nuevo;
+            
+        nombreClienActu = &nuevo;
+        printf("PRIMERA :%p \n", &nuevo);
         }
     }
-    return NULL;
 }
 
 void imprimirUsu()
@@ -282,11 +289,14 @@ void imprimirUsu()
     printf("\n");
 }
 
-void imprimirUsuespe(usuarios *usuPedidos)
+usuarios *usuPedidos = NULL;
+
+void imprimirUsuespe()
 {
     usuarios *recous = usuPedidos;
-        printf("\n\n*********************************\n");
-        printf("\t %s \t %i \t %i",recous->nombreUs ,recous->cedulaUs ,recous->cedulaUs);
+        printf("\n*********************************\n");
+        printf("\t nombre \t cedula \t codigo\n");
+        printf("\t %s \t %s \t %i",usuPedidos->nombreUs ,usuPedidos->cedulaUs ,usuPedidos->codigoUsu);
         printf("\n\n");
 }
 
@@ -312,9 +322,8 @@ typedef struct{             // STRUCT PEDIDOS
 
 pedidos *raizPed = NULL;
 
-int pos = 0;
 
-int existePedido(int x)
+int existePedido(int x, int pos)
 {
     pedidos *recoped = raizPed;
     while (recoped != NULL)
@@ -334,7 +343,7 @@ int vaciaped()
         return 0;
 }
 
-int cantidadPed()
+int cantidadPed(int pos)
 {
     pedidos *recoped = raizPed;
     int cant = 0;
@@ -346,24 +355,28 @@ int cantidadPed()
     return cant;
 }
 
-void insertarPedido( usuarios *usuarioPe, char nombreProd[15] , int cantProd, float valor)
+void insertarPedido( int pos, char nombreProd[15] , int cantProd, float valor)
 {
+    printf("entra insertp");
     static int codigo = 0;
     codigo++;
 
-    int posi = cantidadusu()+1;
-    if(!existePedido(codigo)){
-        if (posi <= cantidadusu() + 1)
+    printf(" cantidad : %i", cantidadPed(pos)+1);
+
+    int posi = cantidadPed(pos)+1;
+    if(!existePedido(codigo, pos)){
+        if (posi <= cantidadPed(pos) + 1)
         {
             pedidos *nuevo;
             nuevo=malloc(sizeof(pedidos));
             nuevo[pos]->codigoPedido = codigo;
-            nuevo[pos]->usuarioP = usuarioPe;
+            nuevo[pos]->usuarioP = nombreClienActu;
             strcpy(nuevo[pos]->nombreP , nombreProd);
             nuevo[pos]->cantidadproducts = cantProd;
             nuevo[pos]->valorC = valor;
             nuevo[pos]->ant=NULL;
             nuevo[pos]->sig=NULL;
+            printf("PASO insertp");
 
             if (posi == 1)
             {
@@ -374,8 +387,9 @@ void insertarPedido( usuarios *usuarioPe, char nombreProd[15] , int cantProd, fl
             }
             else
             {
-                if (posi == cantidadPed() + 1)
+                if (posi == cantidadPed(pos) + 1)
                 {
+                    printf("-sale if insertp");
                     pedidos *reco = raizPed;
                     while (reco[pos]->sig != NULL)
                     {
@@ -383,18 +397,28 @@ void insertarPedido( usuarios *usuarioPe, char nombreProd[15] , int cantProd, fl
                     }
                     reco[pos]->sig = nuevo;
                     nuevo[pos]->ant = reco;
+                    
                 }
                 else
                 {
+                    printf("-sale else insertp");
                     pedidos *reco = raizPed;
                     int f;
-                    for (f = 1; f <= posi - 2; f++)
-                        reco = reco[pos]->sig;
+                    printf("\n-->1<--\n");
+                    printf("pos: %i - reco: ", pos );
+                    for (f = 1; f <= posi - 2; f++)reco = reco[pos]->sig;
+
+                    printf("\n-->2<--\n");
                     pedidos *siguiente = reco[pos]->sig;
+                    printf("\n-->3<--\n");
                     reco[pos]->sig = nuevo;
+                    printf("\n-->4<--\n");
                     nuevo[pos]->ant = reco;
+                    printf("\n-->5<--\n");
                     nuevo[pos]->sig = siguiente;
+                    printf("\n-->6<--\n");
                     siguiente[pos]->ant = nuevo;
+                    printf("\n-->sale<--\n");
                 }
             }
         }
@@ -403,18 +427,26 @@ void insertarPedido( usuarios *usuarioPe, char nombreProd[15] , int cantProd, fl
 
 void imprimirPedi()
 {
-    pedidos *reco=raizPed;
-    printf("\n\n*********************************\n");
-    printf("<<<<<<<<<<  pedido N°:%i  >>>>>>>>>>>\n",reco[pos]->codigoPedido);
-    imprimirUsuespe(reco[pos]->usuarioP);
-
-    while (reco[pos]!=NULL)
+    printf("se vara");
+    pedidos *reco = raizPed;
+    printf("y no se vara %i", cantUs);
+    for (int i = 0; i < cantUs+1; i++)
     {
-        printf("%s\n", reco[pos]->nombreP);
-        printf("\n\n");
-        reco=reco[pos]->sig;
+        printf("\n*********************************\n");
+        printf("<<<<<<<<<<  pedido N:%i  >>>>>>>>>>>\n",reco[i]->codigoPedido);
+        printf("------>>> %p :",reco[i]->usuarioP );
+
+        reco[i]->usuarioP = usuPedidos;
+        imprimirUsuespe();
+        
+        while (reco[i]!=NULL)
+        {
+            printf("\t%s\n", reco[i]->nombreP);
+            printf("\n");
+            reco=reco[i]->sig;
+        }
+        printf("\n");
     }
-    printf("\n");
 }
 
 
@@ -426,7 +458,9 @@ void imprimirPedi()
  *      FUNCIONES DE MAIN
  *
  */
-usuarios* datosUser()
+
+
+void datosUser()
 {
     system("cls");
 
@@ -444,12 +478,12 @@ usuarios* datosUser()
     printf("Ingrese su cedula: ");
     gets(cedula);
 
-    return insertarusu(nombreUs, cedula);
+    insertarusu(nombreUs, cedula);
+    cantUs++;
 }
 
 static void registrarVenta()
 {
-    usuarios *nombreClienActu;
     printf("___LISTA DE PRODUCTOS___");
     imprimirpro();
     printf("\n\n");
@@ -459,14 +493,11 @@ static void registrarVenta()
 
     char opcion ;
     fflush(stdin);
-    printf("----- ¿DECEA COMPRAR? ('s/n') -----  \n");
+    printf("----- ¿DESEA COMPRAR? ('s/n') -----  \n");
     scanf("%c",&opcion);
 
-
-    if (opcion!= 'n') 
-        nombreClienActu = datosUser();
-    printf("-- %i\n", nombreClienActu);
-
+    if(opcion!= 'n') datosUser();
+    
     while(opcion!= 'n')
     {
         printf("-->Ingrese el codigo del producto: ");
@@ -479,10 +510,14 @@ static void registrarVenta()
         printf("-- %f\n", valor);
         char nombre[15]; 
         strcpy(nombre, codNombreProduct(codigo));
-        printf("-- %s\n", nombre);
-        printf("-- %s\n", *nombreClienActu);
 
-        insertarPedido(nombreClienActu, nombre , cantidadp, valor);
+        printf("-- %s\n", nombre);
+        printf("-- %p\n", nombreClienActu);
+        printf("-- %i\n", cantidadp);
+        printf("-- %i\n", precioProduct(codigo));
+        printf("-- %f\n", valor);
+
+        insertarPedido(cantUs, nombre , cantidadp, valor);
 
         fflush(stdin);
         printf("decea adquirir otro producto? 's/n' \n");
@@ -530,11 +565,13 @@ static void menuPrincipal()
         system("cls");
         switch (opcion) {
             case 1:registrarVenta();
-                   break;
+                break;
             case 2:NuevoProducto();
-                   break;
+                break;
             case 5:imprimirUsu();
-                   break;
+                break;
+            case 6:imprimirPedi();
+                break;
             default:
                 printf("la opcion no es valida");
         }
@@ -551,6 +588,8 @@ int main()
 
     insertarusu("YHON J", "1645543");
     insertarusu("YHON OCHOA", "16455763");
+    insertarusu("MARIA J", "154555543");
+    insertarusu("YJ OCHOA", "13789763");
 
     menuPrincipal();
 
