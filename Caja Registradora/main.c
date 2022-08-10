@@ -115,7 +115,7 @@ void imprimirpro()
         printf("\n\n*********************************\n");
         printf("<<<<<<<<<<  %s  >>>>>>>>>>>\n",reco->nombre);
         printf("\t codigo : %i \n",reco->codigo);
-        printf("\t precio : %f \n",reco->precio);
+        printf("\t precio : %0.0f \n",reco->precio);
         printf("\n\n");
         reco=reco->sig;
     }
@@ -143,7 +143,7 @@ int descontarProducto(int x, int cant)
 
 const char* codNombreProduct(int cod)
 {
-     nodo *reco = raiz;
+    nodo *reco = raiz;
     while (reco != NULL)
     {
         if (reco->codigo == cod)
@@ -234,6 +234,8 @@ void insertarusu( char nombreusu[15], char cedula[15] )
             nuevo->ant=NULL;
             nuevo->sig=NULL;
 
+            
+
             if (pos == 1)
             {
                 nuevo->sig = raizUsu;
@@ -251,6 +253,7 @@ void insertarusu( char nombreusu[15], char cedula[15] )
                         reco = reco->sig;
                     }
                     reco->sig = nuevo;
+                    nombreClienActu = reco->sig;
                     nuevo->ant = reco;
                 }
                 else
@@ -266,9 +269,6 @@ void insertarusu( char nombreusu[15], char cedula[15] )
                     siguiente->ant = nuevo;
                 }
             }
-            
-        nombreClienActu = &nuevo;
-        printf("PRIMERA :%p \n", &nuevo);
         }
     }
 }
@@ -278,28 +278,21 @@ void imprimirUsu()
     usuarios *recous=raizUsu;
     while (recous!=NULL)
     {
-        printf("\n\n*********************************\n");
+        printf("\n\n************************************\n");
         printf("<<<<<<<<<<  %s  >>>>>>>>>>>\n",recous->nombreUs);
-        printf("\t cedula : %i \n",recous->cedulaUs);
-        printf("\t cod : %i \n",recous->codigoUsu);
-        printf("\n\n");
+        printf("\t cedula : %s \n",recous->cedulaUs);
+        printf("\t cod : %i \n\n",recous->codigoUsu);
         recous=recous->sig;
     }
     printf("\n");
 }
 
-//usuarios *usuPedidos = NULL;
-
-void imprimirUsuespe()
+void imprimirUsuespe(usuarios *usuarioProd)
 {
-    //nombreClienActu =malloc(sizeof(usuarios));
-    //usuarios *recous = usuPedidos;
-        printf("\n*********************************\n");
-        printf("\t nombre \t cedula \t codigo\n");
-        printf("%s \t %s \t %i\n\n",nombreClienActu->nombreUs ,nombreClienActu->cedulaUs ,nombreClienActu->codigoUsu);
+        printf("\n*************************************\n");
+        printf(" nombre\t cedula\t codigo\n");
+        printf(" %s \t %s \t %i\n\n",usuarioProd->nombreUs ,usuarioProd->cedulaUs ,usuarioProd->codigoUsu);
 }
-
-
 
 
 /**
@@ -310,7 +303,7 @@ void imprimirUsuespe()
 
 typedef struct{             // STRUCT PEDIDOS
     int codigoPedido; 
-    struct usuarios *usuarioP;
+    usuarios *usuarioP;
     char nombreP[15];
     int cantidadproducts;
     float valorC;
@@ -395,6 +388,7 @@ void insertarPedido( int pos, char nombreProd[15] , int cantProd, float valor)
                 else
                 {
                     pedidos *reco = raizPed;
+                    pedidos ejemplo ;
                     int f;
                     for (f = 1; f <= posi - 2; f++)reco = reco[pos]->sig;
 
@@ -403,6 +397,8 @@ void insertarPedido( int pos, char nombreProd[15] , int cantProd, float valor)
                     nuevo[pos]->ant = reco;
                     nuevo[pos]->sig = siguiente;
                     siguiente[pos]->ant = nuevo;
+
+                    ejemplo->codigoPedido;
                 }
             }
         }
@@ -414,17 +410,13 @@ void imprimirPedi()
     pedidos *reco = raizPed;
     for (int i = 0; i < cantUs+1; i++)
     {
-        printf("\n*********************************\n");
+        printf("\n*************************************\n");
         printf("<<<<<<<<<<  pedido N:%i  >>>>>>>>>>>\n",reco[i]->codigoPedido);
-        printf("------>>> %p :",reco[i]->usuarioP );
-
-        nombreClienActu = reco[i]->usuarioP;
-        imprimirUsuespe();
+        imprimirUsuespe(reco[i]->usuarioP);
         
         while (reco[i]!=NULL)
         {
-            printf("\t%s\n", reco[i]->nombreP);
-            printf("\n");
+            printf("\t%i) - %s\n\n", i ,reco[i]->nombreP);
             reco=reco[i]->sig;
         }
         printf("\n");
@@ -458,7 +450,7 @@ void datosUser()
 
     fflush(stdin);
     printf("Ingrese su cedula: ");
-    gets(cedula);
+    scanf("%s", &cedula);
 
     insertarusu(nombreUs, cedula);
     cantUs++;
@@ -466,10 +458,6 @@ void datosUser()
 
 static void registrarVenta()
 {
-    printf("___LISTA DE PRODUCTOS___");
-    imprimirpro();
-    printf("\n\n");
-
     int codigo;
     int cantidadp;
 
@@ -478,7 +466,12 @@ static void registrarVenta()
     printf("----- ¿DESEA COMPRAR? ('s/n') -----  \n");
     scanf("%c",&opcion);
 
-    if(opcion!= 'n') datosUser();
+    if(opcion!= 'n'){
+        datosUser(); 
+        printf("___LISTA DE PRODUCTOS___");
+        imprimirpro();
+        printf("\n\n");
+    } 
     
     while(opcion!= 'n')
     {
@@ -491,6 +484,7 @@ static void registrarVenta()
         float valor = (float) cantidadp * precioProduct(codigo);
         char nombre[15]; 
         strcpy(nombre, codNombreProduct(codigo));
+        printf("pasa %i", cantUs);
 
         insertarPedido(cantUs, nombre , cantidadp, valor);
 
