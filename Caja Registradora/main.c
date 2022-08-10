@@ -7,7 +7,9 @@
  * 
  */
 
+#define TAMANO 50
 int cantUs = -1;
+
 
 
 
@@ -312,6 +314,7 @@ typedef struct{             // STRUCT PEDIDOS
 }pedidos[50];
 
 pedidos *raizPed = NULL;
+pedidos vectorPedidos[TAMANO]; // la idea es en este array meter las raices de cada lista ok 
 
 
 int existePedido(int x, int pos)
@@ -425,8 +428,6 @@ void imprimirPedi()
 
 
 
-
-
 /**
  *
  *      FUNCIONES DE MAIN
@@ -434,8 +435,7 @@ void imprimirPedi()
  */
 
 
-void datosUser()
-{
+void datosUser(){
     system("cls");
 
     char nombreUs[15];
@@ -486,7 +486,7 @@ static void registrarVenta()
         strcpy(nombre, codNombreProduct(codigo));
         printf("pasa %i", cantUs);
 
-        insertarPedido(cantUs, nombre , cantidadp, valor);
+        insertarPedido(cantUs, nombre , cantidadp, valor); // el dilema es el campo cantUs
 
         fflush(stdin);
         printf("decea adquirir otro producto? 's/n' \n");
