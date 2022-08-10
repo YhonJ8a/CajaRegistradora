@@ -53,7 +53,7 @@ int cantidadpro()
     return cant;
 }
 
-void insertarpro( char nombrep[15], int cantidadp, float preciop )
+void insertarpro( char nombrep[15], int cantidadp, float preciop ) 
 {
     static int x = 0;
     x++;
@@ -185,10 +185,10 @@ typedef struct{             // USUARIOS
 }usuarios;
 
 usuarios *raizUsu = NULL;
-usuarios *nombreClienActu;
+usuarios *nombreClienActu = NULL;
 
-int existeUsu(int x)
-{
+
+int existeUsu(int x){
     usuarios *recousu = raizUsu;
     while (recousu != NULL)
     {
@@ -199,8 +199,7 @@ int existeUsu(int x)
     return 0;
 }
 
-int vaciausu()
-{
+int vaciausu(){
     if (raizUsu == NULL)
         return 1;
     else
@@ -289,17 +288,16 @@ void imprimirUsu()
     printf("\n");
 }
 
-usuarios *usuPedidos = NULL;
+//usuarios *usuPedidos = NULL;
 
 void imprimirUsuespe()
 {
-    usuarios *recous = usuPedidos;
+    //nombreClienActu =malloc(sizeof(usuarios));
+    //usuarios *recous = usuPedidos;
         printf("\n*********************************\n");
         printf("\t nombre \t cedula \t codigo\n");
-        printf("\t %s \t %s \t %i",usuPedidos->nombreUs ,usuPedidos->cedulaUs ,usuPedidos->codigoUsu);
-        printf("\n\n");
+        printf("%s \t %s \t %i\n\n",nombreClienActu->nombreUs ,nombreClienActu->cedulaUs ,nombreClienActu->codigoUsu);
 }
-
 
 
 
@@ -357,11 +355,8 @@ int cantidadPed(int pos)
 
 void insertarPedido( int pos, char nombreProd[15] , int cantProd, float valor)
 {
-    printf("entra insertp");
     static int codigo = 0;
     codigo++;
-
-    printf(" cantidad : %i", cantidadPed(pos)+1);
 
     int posi = cantidadPed(pos)+1;
     if(!existePedido(codigo, pos)){
@@ -376,7 +371,6 @@ void insertarPedido( int pos, char nombreProd[15] , int cantProd, float valor)
             nuevo[pos]->valorC = valor;
             nuevo[pos]->ant=NULL;
             nuevo[pos]->sig=NULL;
-            printf("PASO insertp");
 
             if (posi == 1)
             {
@@ -389,7 +383,6 @@ void insertarPedido( int pos, char nombreProd[15] , int cantProd, float valor)
             {
                 if (posi == cantidadPed(pos) + 1)
                 {
-                    printf("-sale if insertp");
                     pedidos *reco = raizPed;
                     while (reco[pos]->sig != NULL)
                     {
@@ -401,24 +394,15 @@ void insertarPedido( int pos, char nombreProd[15] , int cantProd, float valor)
                 }
                 else
                 {
-                    printf("-sale else insertp");
                     pedidos *reco = raizPed;
                     int f;
-                    printf("\n-->1<--\n");
-                    printf("pos: %i - reco: ", pos );
                     for (f = 1; f <= posi - 2; f++)reco = reco[pos]->sig;
 
-                    printf("\n-->2<--\n");
                     pedidos *siguiente = reco[pos]->sig;
-                    printf("\n-->3<--\n");
                     reco[pos]->sig = nuevo;
-                    printf("\n-->4<--\n");
                     nuevo[pos]->ant = reco;
-                    printf("\n-->5<--\n");
                     nuevo[pos]->sig = siguiente;
-                    printf("\n-->6<--\n");
                     siguiente[pos]->ant = nuevo;
-                    printf("\n-->sale<--\n");
                 }
             }
         }
@@ -427,16 +411,14 @@ void insertarPedido( int pos, char nombreProd[15] , int cantProd, float valor)
 
 void imprimirPedi()
 {
-    printf("se vara");
     pedidos *reco = raizPed;
-    printf("y no se vara %i", cantUs);
     for (int i = 0; i < cantUs+1; i++)
     {
         printf("\n*********************************\n");
         printf("<<<<<<<<<<  pedido N:%i  >>>>>>>>>>>\n",reco[i]->codigoPedido);
         printf("------>>> %p :",reco[i]->usuarioP );
 
-        reco[i]->usuarioP = usuPedidos;
+        nombreClienActu = reco[i]->usuarioP;
         imprimirUsuespe();
         
         while (reco[i]!=NULL)
@@ -507,15 +489,8 @@ static void registrarVenta()
         scanf("%i", &cantidadp);
 
         float valor = (float) cantidadp * precioProduct(codigo);
-        printf("-- %f\n", valor);
         char nombre[15]; 
         strcpy(nombre, codNombreProduct(codigo));
-
-        printf("-- %s\n", nombre);
-        printf("-- %p\n", nombreClienActu);
-        printf("-- %i\n", cantidadp);
-        printf("-- %i\n", precioProduct(codigo));
-        printf("-- %f\n", valor);
 
         insertarPedido(cantUs, nombre , cantidadp, valor);
 
