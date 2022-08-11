@@ -11,9 +11,6 @@
 int cantUs = -1;
 
 
-
-
-
 /**
 
  *      FUNCIONES DE PRODUCTOS
@@ -116,9 +113,7 @@ void imprimirpro()
     {
         printf("\n\n*********************************\n");
         printf("<<<<<<<<<<  %s  >>>>>>>>>>>\n",reco->nombre);
-        printf("\t codigo : %i \n",reco->codigo);
-        printf("\t precio : %0.0f \n",reco->precio);
-        printf("\n\n");
+        printf(" codigo: %i\t precio : %0.0f \n",reco->codigo,reco->precio);
         reco=reco->sig;
     }
     printf("\n");
@@ -311,118 +306,114 @@ typedef struct{             // STRUCT PEDIDOS
     float valorC;
     struct pedidos *sig;
     struct pedidos *ant;
-}pedidos[50];
+}pedidos;
 
 pedidos *raizPed = NULL;
-pedidos vectorPedidos[TAMANO]; // la idea es en este array meter las raices de cada lista ok 
+pedidos *vectorPedidos[TAMANO]; // la idea es en este array meter las raices de cada lista ok 
+//int i;
 
 
-int existePedido(int x, int pos)
+int existePedido(int x, pedidos *raizPedEx)
 {
-    pedidos *recoped = raizPed;
+    pedidos *recoped = raizPedEx;
     while (recoped != NULL)
     {
-        if (recoped[pos]->codigoPedido == x)
+        if (recoped->codigoPedido == x)
             return 1;
-        recoped = recoped[pos]->sig;
+        recoped = recoped->sig;
     }
     return 0;
 }
 
-int vaciaped()
+int vaciaped(pedidos *raizPedEx)
 {
-    if (raizPed == NULL)
+    if (raizPedEx == NULL)
         return 1;
     else
         return 0;
 }
 
-int cantidadPed(int pos)
+int cantidadPed(pedidos *raizPedCa)
 {
-    pedidos *recoped = raizPed;
-    int cant = 0;
-    while (recoped[pos] != NULL)
+    int cantd = 0;
+    pedidos *recoped = raizPedCa;
+    while (recoped != NULL)
     {
-        cant++;
-        recoped = recoped[pos]->sig;
+        printf("name::: %s\n", recoped->nombreP);
+        recoped = recoped->sig;
+        cantd++;
+        printf("::: %i\n",cantd);
     }
-    return cant;
+    return cantd;
 }
 
-void insertarPedido( int pos, char nombreProd[15] , int cantProd, float valor)
+void insertarPedido( int pos , char nombreProd[15] , int cantProd, float valor, pedidos *vect[TAMANO])
 {
     static int codigo = 0;
     codigo++;
-
-    int posi = cantidadPed(pos)+1;
-    if(!existePedido(codigo, pos)){
-        if (posi <= cantidadPed(pos) + 1)
-        {
+    
+    printf("guardar : %i , %s , %i , %0.0f \n", pos , nombreProd, cantProd, valor);
+    int posi = cantidadPed(vect[pos])+1;
+    if(!existePedido(codigo, vect[pos])){
+        if (posi <= cantidadPed(vect[pos])+1 ){
             pedidos *nuevo;
             nuevo=malloc(sizeof(pedidos));
-            nuevo[pos]->codigoPedido = codigo;
-            nuevo[pos]->usuarioP = nombreClienActu;
-            strcpy(nuevo[pos]->nombreP , nombreProd);
-            nuevo[pos]->cantidadproducts = cantProd;
-            nuevo[pos]->valorC = valor;
-            nuevo[pos]->ant=NULL;
-            nuevo[pos]->sig=NULL;
+            nuevo->codigoPedido = codigo;
+            nuevo->usuarioP = nombreClienActu;
+            strcpy(nuevo->nombreP , nombreProd);
+            nuevo->cantidadproducts = cantProd;
+            nuevo->valorC = valor;
+            nuevo->ant=NULL;
+            nuevo->sig=NULL;
 
             if (posi == 1)
             {
-                nuevo[pos]->sig = raizPed;
-                if (raizPed != NULL)
-                    raizPed[pos]->ant = nuevo;
-                raizPed = nuevo;
+                nuevo->sig = vect[pos];
+                if (vect[pos] != NULL) vect[pos]->ant = nuevo;
+                vect[pos] = nuevo;
             }
             else
             {
-                if (posi == cantidadPed(pos) + 1)
+                if (posi == cantidadPed(vect[pos]) + 1)
                 {
-                    pedidos *reco = raizPed;
-                    while (reco[pos]->sig != NULL)
-                    {
-                        reco = reco[pos]->sig;
-                    }
-                    reco[pos]->sig = nuevo;
-                    nuevo[pos]->ant = reco;
-                    
+                    pedidos *reco = vect[pos];
+                    while (reco->sig != NULL)reco = reco->sig;
+                    reco->sig = nuevo;
+                    nuevo->ant = reco;
                 }
                 else
                 {
-                    pedidos *reco = raizPed;
-                    pedidos ejemplo ;
+                    pedidos *reco = vect[pos];
                     int f;
-                    for (f = 1; f <= posi - 2; f++)reco = reco[pos]->sig;
+                    for (f = 1; f <= posi - 2; f++)reco = reco->sig;
 
-                    pedidos *siguiente = reco[pos]->sig;
-                    reco[pos]->sig = nuevo;
-                    nuevo[pos]->ant = reco;
-                    nuevo[pos]->sig = siguiente;
-                    siguiente[pos]->ant = nuevo;
-
-                    ejemplo->codigoPedido;
+                    pedidos *siguiente = reco->sig;
+                    reco->sig = nuevo;
+                    nuevo->ant = reco;
+                    nuevo->sig = siguiente;
+                    siguiente->ant = nuevo;
                 }
             }
         }
     }
 }
 
-void imprimirPedi()
+void imprimirPedi(pedidos *vectP[TAMANO])
 {
-    pedidos *reco = raizPed;
-    for (int i = 0; i < cantUs+1; i++)
+    system("cls");
+    int i = 0;
+    pedidos *reco = vectP[i];
+    printf("se mama");
+    while (reco != NULL)
     {
+        reco = vectP[i];
         printf("\n*************************************\n");
-        printf("<<<<<<<<<<  pedido N:%i  >>>>>>>>>>>\n",reco[i]->codigoPedido);
-        imprimirUsuespe(reco[i]->usuarioP);
+        printf("<<<<<<<<<<  pedido N:%i  >>>>>>>>>>>\n", reco->codigoPedido);
+        imprimirUsuespe(reco->usuarioP);
         
-        while (reco[i]!=NULL)
-        {
-            printf("\t%i) - %s\n\n", i ,reco[i]->nombreP);
-            reco=reco[i]->sig;
-        }
+        while (reco!=NULL) reco=reco->sig;
         printf("\n");
+        i++;
     }
 }
 
@@ -468,9 +459,8 @@ static void registrarVenta()
 
     if(opcion!= 'n'){
         datosUser(); 
-        printf("___LISTA DE PRODUCTOS___");
+        printf("\t___LISTA DE PRODUCTOS___");
         imprimirpro();
-        printf("\n\n");
     } 
     
     while(opcion!= 'n')
@@ -484,9 +474,8 @@ static void registrarVenta()
         float valor = (float) cantidadp * precioProduct(codigo);
         char nombre[15]; 
         strcpy(nombre, codNombreProduct(codigo));
-        printf("pasa %i", cantUs);
 
-        insertarPedido(cantUs, nombre , cantidadp, valor); // el dilema es el campo cantUs
+        insertarPedido(cantUs, nombre , cantidadp, valor , &vectorPedidos); // el dilema es el campo cantUs
 
         fflush(stdin);
         printf("decea adquirir otro producto? 's/n' \n");
@@ -539,7 +528,7 @@ static void menuPrincipal()
                 break;
             case 5:imprimirUsu();
                 break;
-            case 6:imprimirPedi();
+            case 6:imprimirPedi(&vectorPedidos);
                 break;
             default:
                 printf("la opcion no es valida");
@@ -549,10 +538,11 @@ static void menuPrincipal()
 
 int main()
 {
+    for (int i = 0 ; i< TAMANO ; i++) vectorPedidos[i]= raizPed;
 
-    insertarpro( "MANZANA", 15, 1000.0 );
-    insertarpro( "PERA", 15, 1000.0 );
-    insertarpro( "ZANAHORIA", 15, 1000.0 );
+    insertarpro( "MANZANA", 15, 1500.0 );
+    insertarpro( "PERA", 15, 1350.0 );
+    insertarpro( "ZANAHORIA", 15, 2000.0 );
 
 
     insertarusu("YHON J", "1645543");
