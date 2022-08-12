@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 /**
  * 
@@ -111,26 +112,26 @@ void imprimirpro()
     nodo *reco=raiz;
     while (reco!=NULL)
     {
-        printf("\n*********************************\n");
-        printf("<<<<<<<<<<  %s  >>>>>>>>>>>\n",reco->nombre);
-        printf(" codigo: %i\t precio : %0.0f \n",reco->codigo,reco->precio);
+        printf("\n<<<<<<<<<<  %s  >>>>>>>>>>>\n",reco->nombre);
+        printf(" cod: %i | cant: %i | precio : %0.0f \n", reco->codigo , reco->cantidad , reco->precio);
         reco=reco->sig;
     }
     printf("\n");
 }
 
-int descontarProducto(int x, int cant)
+int descontarProducto(int codip, int cant)
 {
-     nodo *reco = raiz;
+    nodo *reco = raiz;
     while (reco != NULL)
     {
-        if (reco->codigo == x)
+        if (reco->codigo == codip)
         {
-            if(reco->cantidad >= cant)
-            {
+            if(reco->cantidad >= cant) {
                 reco->cantidad -= cant;
+                printf("se desconto\n");
                 return 1;
             }else
+                printf(">>>>>La cantidad excede el stock.<<<<<\n");
                 return 0;
         }
         reco = reco->sig;
@@ -163,8 +164,6 @@ int precioProduct(int cod)
     }
     return 0;
 }
-
-
 
 
 /**
@@ -286,14 +285,14 @@ void imprimirUsu()
 
 void imprimirUsuespe(usuarios *usuarioProd)
 {
-        printf("\n*************************************\n");
-        printf(" nombre\t cedula\t codigo\n");
-        printf(" %s \t %s \t %i\n",usuarioProd->nombreUs ,usuarioProd->cedulaUs ,usuarioProd->codigoUsu);
+        printf("*************************************\n");
+        printf(" nombre \tcedula\t codigo\n");
+        printf(" %s  \t%s  \t%i\n",usuarioProd->nombreUs ,usuarioProd->cedulaUs ,usuarioProd->codigoUsu);
 }
 
 
 /**
- *
+ *             
  *      FUNCIONES DE PEDIDO
  *
  */
@@ -303,6 +302,7 @@ typedef struct{             // STRUCT PEDIDOS
     usuarios *usuarioP;
     char nombreP[15];
     int cantidadproducts;
+    char fecha[70];
     float valorC;
     struct pedidos *sig;
     struct pedidos *ant;
@@ -346,6 +346,13 @@ int cantidadPed(pedidos *raizPedCa)
 
 void insertarPedido( int pos , char nombreProd[15] , int cantProd, float valor, pedidos *vect[TAMANO])
 {
+
+    time_t t = time(NULL);
+    struct tm tiempoLocal = *localtime(&t);
+    char fechaHora[70];
+    char *formato = "%Y-%m-%d %H:%M:%S";
+    int bytesEscritos = strftime(fechaHora, sizeof fechaHora, formato, &tiempoLocal);
+
     static int codigo = 0;
     codigo++;
     int posi = cantidadPed(vect[pos])+1;
@@ -358,6 +365,7 @@ void insertarPedido( int pos , char nombreProd[15] , int cantProd, float valor, 
             strcpy(nuevo->nombreP , nombreProd);
             nuevo->cantidadproducts = cantProd;
             nuevo->valorC = valor;
+            strcpy(nuevo->fecha, fechaHora);
             nuevo->ant=NULL;
             nuevo->sig=NULL;
 
@@ -398,19 +406,54 @@ void imprimirPedi(pedidos *vectP[TAMANO])
     system("cls");
     int i = 0;
     pedidos *reco = vectP[i];
+    pedidos *reco2 = vectP[i];
     while(vectP[i] != NULL)
     {
         reco = vectP[i];
         printf("\n*************************************\n");
         printf("<<<<<<<<<<  pedido N:%i  >>>>>>>>>>>\n", vectP[i]->codigoPedido);
+        printf("fecha: %s\n", vectP[i]->fecha );
         imprimirUsuespe(reco->usuarioP);
         
         while (reco!=NULL){
-            printf("->\t%s\n", reco->nombreP);
+            printf("->%s\t\t..........%0.2f\n", reco->nombreP, reco->valorC);
             reco=reco->sig;
         }
+
+        float total= 0;
+
+        while (reco2!=NULL){
+            total += reco2->valorC;
+            reco2=reco2->sig;
+        }
+        printf("\tTOTAL %f\n", total);
         i++;
     }
+}
+
+void imprimirPediEspes(pedidos *vectEsps)
+{
+    int i = 0;
+    pedidos *reco = vectEsps;
+    pedidos *reco2 = vectEsps;
+
+    printf("\n*************************************\n");
+    printf("<<<<<<<<<<  pedido N:%i  >>>>>>>>>>>\n", reco->codigoPedido);
+    imprimirUsuespe(reco->usuarioP);
+    
+    while (reco!=NULL){
+        printf("->\t%s\t.....%0.2f\n", reco->nombreP, reco->valorC);
+        reco=reco->sig;
+    }
+
+    float total= 0;
+
+    while (reco2!=NULL){
+        total += reco2->valorC;
+        reco2=reco2->sig;
+    }
+    printf("\tTOTAL %0.2f\n\n\n", total);
+    i++;
 }
 
 
@@ -421,6 +464,21 @@ void imprimirPedi(pedidos *vectP[TAMANO])
  *
  */
 
+const char* fecha(){
+    time_t t = time(NULL);
+    struct tm tiempoLocal = *localtime(&t);
+    char fechaHora[70];
+    char *formato = "%Y-%m-%d %H:%M:%S";
+    int bytesEscritos = strftime(fechaHora, sizeof fechaHora, formato, &tiempoLocal);
+    if (bytesEscritos != 0) {
+        printf("Fecha y hora: %s", fechaHora);
+    } else {
+        printf("Error formateando fecha");
+    } 
+    char fecha[70];
+    strcpy(fecha, fechaHora);
+    return fecha;
+}
 
 void datosUser(){
     system("cls");
@@ -450,12 +508,12 @@ static void registrarVenta()
 
     char opcion ;
     fflush(stdin);
-    printf("-----¿ DESEA COMPRAR? ('s/n') -----  \n");
+    printf("----- DESEA COMPRAR? ('s/n') -----  \n\n");
     scanf("%c",&opcion);
 
     if(opcion!= 'n'){
         datosUser(); 
-        printf("\t___LISTA DE PRODUCTOS___");
+        printf("___   LISTA DE PRODUCTOS   ___");
         imprimirpro();
     } 
     
@@ -471,12 +529,14 @@ static void registrarVenta()
         char nombre[15]; 
         strcpy(nombre, codNombreProduct(codigo));
 
-        insertarPedido(cantUs, nombre , cantidadp, valor , &vectorPedidos); // el dilema es el campo cantUs
-
+        printf(" cod: %i, cant :%i",codigo, cantidadp );
+        if (descontarProducto(codigo, cantidadp)) insertarPedido(cantUs, nombre , cantidadp, valor , &vectorPedidos); 
+        
         fflush(stdin);
-        printf("decea adquirir otro producto? 's/n' \n");
+        printf(" Decea adquirir otro producto? 's/n' \n");
         scanf("%c",&opcion);
     }
+    if(opcion == 'n')  imprimirPediEspes(vectorPedidos[cantUs]);
 }
 
 static void NuevoProducto()
@@ -512,9 +572,9 @@ static void inventario()
 {
     int opcion;
     do {
-        printf("\v1-Agregar producto.\n");
-        printf("2-Listado de productos.\n");
-        printf("3-Salir.\n\n");
+        printf("\n 1-Agregar producto.\n");
+        printf(" 2-Listado de productos.\n");
+        printf(" 3-Salir.\n\n");
         printf("Elija su opcion:");
         scanf("%i",&opcion);
         system("cls");
@@ -524,7 +584,7 @@ static void inventario()
             case 2:imprimirpro();
                 break; 
             default:
-                printf("\v");
+                printf("\n");
         }
     } while(opcion!=3);
 }
@@ -550,7 +610,7 @@ static void menuPrincipal()
             case 5:imprimirUsu();
                 break;
             default:
-                printf("la opcion no es valida");
+                printf("'nla opcion no es valida\n");
         }
     } while(opcion!=4);
 }
@@ -564,10 +624,10 @@ int main()
     insertarpro( "ZANAHORIA", 15, 2000.0 );
 
 
-    insertarusu("YHON J", "1645543");
-    insertarusu("YHON OCHOA", "16455763");
-    insertarusu("MARIA J", "154555543");
-    insertarusu("YJ OCHOA", "13789763");
+    insertarusu("YHON J", "13746153");
+    insertarusu("YHON OCHOA", "2576873");
+    insertarusu("MARIA J", "3278445");
+    insertarusu("YJ OCHOA", "3749848");
 
     menuPrincipal();
 
