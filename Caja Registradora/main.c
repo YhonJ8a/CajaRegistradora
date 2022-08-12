@@ -111,7 +111,7 @@ void imprimirpro()
     nodo *reco=raiz;
     while (reco!=NULL)
     {
-        printf("\n\n*********************************\n");
+        printf("\n*********************************\n");
         printf("<<<<<<<<<<  %s  >>>>>>>>>>>\n",reco->nombre);
         printf(" codigo: %i\t precio : %0.0f \n",reco->codigo,reco->precio);
         reco=reco->sig;
@@ -288,7 +288,7 @@ void imprimirUsuespe(usuarios *usuarioProd)
 {
         printf("\n*************************************\n");
         printf(" nombre\t cedula\t codigo\n");
-        printf(" %s \t %s \t %i\n\n",usuarioProd->nombreUs ,usuarioProd->cedulaUs ,usuarioProd->codigoUsu);
+        printf(" %s \t %s \t %i\n",usuarioProd->nombreUs ,usuarioProd->cedulaUs ,usuarioProd->codigoUsu);
 }
 
 
@@ -309,8 +309,7 @@ typedef struct{             // STRUCT PEDIDOS
 }pedidos;
 
 pedidos *raizPed = NULL;
-pedidos *vectorPedidos[TAMANO]; // la idea es en este array meter las raices de cada lista ok 
-//int i;
+pedidos *vectorPedidos[TAMANO]; 
 
 
 int existePedido(int x, pedidos *raizPedEx)
@@ -339,10 +338,8 @@ int cantidadPed(pedidos *raizPedCa)
     pedidos *recoped = raizPedCa;
     while (recoped != NULL)
     {
-        printf("name::: %s\n", recoped->nombreP);
         recoped = recoped->sig;
         cantd++;
-        printf("::: %i\n",cantd);
     }
     return cantd;
 }
@@ -351,8 +348,6 @@ void insertarPedido( int pos , char nombreProd[15] , int cantProd, float valor, 
 {
     static int codigo = 0;
     codigo++;
-    
-    printf("guardar : %i , %s , %i , %0.0f \n", pos , nombreProd, cantProd, valor);
     int posi = cantidadPed(vect[pos])+1;
     if(!existePedido(codigo, vect[pos])){
         if (posi <= cantidadPed(vect[pos])+1 ){
@@ -403,16 +398,17 @@ void imprimirPedi(pedidos *vectP[TAMANO])
     system("cls");
     int i = 0;
     pedidos *reco = vectP[i];
-    printf("se mama");
-    while (reco != NULL)
+    while(vectP[i] != NULL)
     {
         reco = vectP[i];
         printf("\n*************************************\n");
-        printf("<<<<<<<<<<  pedido N:%i  >>>>>>>>>>>\n", reco->codigoPedido);
+        printf("<<<<<<<<<<  pedido N:%i  >>>>>>>>>>>\n", vectP[i]->codigoPedido);
         imprimirUsuespe(reco->usuarioP);
         
-        while (reco!=NULL) reco=reco->sig;
-        printf("\n");
+        while (reco!=NULL){
+            printf("->\t%s\n", reco->nombreP);
+            reco=reco->sig;
+        }
         i++;
     }
 }
@@ -454,7 +450,7 @@ static void registrarVenta()
 
     char opcion ;
     fflush(stdin);
-    printf("----- ¿DESEA COMPRAR? ('s/n') -----  \n");
+    printf("-----¿ DESEA COMPRAR? ('s/n') -----  \n");
     scanf("%c",&opcion);
 
     if(opcion!= 'n'){
@@ -468,7 +464,7 @@ static void registrarVenta()
         printf("-->Ingrese el codigo del producto: ");
         scanf("%i", &codigo);
         fflush(stdin);
-        printf("-->Ingrese el cantidad del producto: ");
+        printf("-->Ingrese el cantidad del producto: "); 
         scanf("%i", &cantidadp);
 
         float valor = (float) cantidadp * precioProduct(codigo);
@@ -492,15 +488,17 @@ static void NuevoProducto()
     char opcion;
     do {
         printf("-->Ingrese el nombre del producto: ");
+        fflush(stdin);
         gets(nombrep);
         printf("-->Ingrese el cantidad del producto: ");
+        fflush(stdin);
         scanf("%i", &cantidadp);
         printf("-->Ingrese el precio del producto: ");
+        fflush(stdin);
         scanf("%f", &preciop);
         system("cls");
 
         insertarpro( nombrep, cantidadp, preciop );
-        printf("-- paso..\n");
 
         fflush(stdin);
         printf("decea continuar? 's/n' \n");
@@ -508,6 +506,27 @@ static void NuevoProducto()
         system("cls");
 
     } while(opcion!= 'n');
+}
+
+static void inventario()
+{
+    int opcion;
+    do {
+        printf("\v1-Agregar producto.\n");
+        printf("2-Listado de productos.\n");
+        printf("3-Salir.\n\n");
+        printf("Elija su opcion:");
+        scanf("%i",&opcion);
+        system("cls");
+        switch (opcion) {
+            case 1:NuevoProducto();
+                break;
+            case 2:imprimirpro();
+                break; 
+            default:
+                printf("\v");
+        }
+    } while(opcion!=3);
 }
 
 static void menuPrincipal()
@@ -524,11 +543,11 @@ static void menuPrincipal()
         switch (opcion) {
             case 1:registrarVenta();
                 break;
-            case 2:NuevoProducto();
+            case 2:inventario();
+                break;
+            case 3:imprimirPedi(&vectorPedidos);
                 break;
             case 5:imprimirUsu();
-                break;
-            case 6:imprimirPedi(&vectorPedidos);
                 break;
             default:
                 printf("la opcion no es valida");
